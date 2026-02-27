@@ -3298,7 +3298,9 @@
                 
                 // Log untuk debug
                 console.log('Sending messages:', messagesArray);
-                await streamAIResponse(apiKey, fullMessage, (chunk) => {
+                
+                // ⭐ PERBAIKAN: Langsung panggil streamAIResponseWithMemory
+                await streamAIResponseWithMemory(apiKey, messagesArray, (chunk) => {
                     if (!hasReceivedChunk) {
                         fullResponse = chunk;
                         hasReceivedChunk = true;
@@ -3318,6 +3320,7 @@
                 const endTime = Date.now();
                 const duration = ((endTime - startTime) / 1000).toFixed(2);
                 
+                // ⭐ BARU: Simpan ke conversation history jika memory mode aktif
                 if (useMemoryMode) {
                     conversationHistory.push({
                         role: 'user',
@@ -3336,7 +3339,7 @@
                     
                     console.log('Memory updated:', conversationHistory);
                 }
-
+                
                 // Display response (ini akan aktifkan TTS)
                 displayResponse(fullResponse, duration);
                 
@@ -3369,9 +3372,9 @@
             }
         }
 
-        // Streaming response handler
+        // Wrapper untuk backward compatibility - HANYA untuk single message
         async function streamAIResponse(apiKey, message, onChunk) {
-            // Wrapper untuk backward compatibility
+            // Buat array dengan satu pesan
             const messagesArray = [{
                 role: 'user',
                 content: message
@@ -3379,11 +3382,11 @@
             return streamAIResponseWithMemory(apiKey, messagesArray, onChunk);
         }
 
-        // Fungsi baru dengan support memory
+        // Fungsi utama dengan support memory
         async function streamAIResponseWithMemory(apiKey, messagesArray, onChunk) {
             const provider = currentProvider;
             
-            // Gemini pakai non-streaming
+            // Gemini pakai non-streaming dengan memory
             if (provider === 'gemini') {
                 const response = await callGeminiWithMemory(apiKey, messagesArray);
                 onChunk(response);
@@ -3397,7 +3400,8 @@
             ];
             
             if (nonStreamingProviders.includes(provider)) {
-                const response = await callNonStreamingWithMemory(apiKey, messagesArray);
+                // ⭐ PERBAIKAN: Gunakan callNonStreaming biasa tapi dengan messages array
+                const response = await callNonStreaming(apiKey, messagesArray[0]?.content || '');
                 onChunk(response);
                 return;
             }
@@ -3405,7 +3409,7 @@
             // Build endpoint & headers untuk streaming providers
             let url, headers, body;
             
-            // Format messages untuk berbagai provider
+            // ⭐ PERBAIKAN: formatMessagesForProvider sudah global
             const formattedMessages = formatMessagesForProvider(messagesArray, provider);
             
             switch(provider) {
@@ -3436,19 +3440,19 @@
                 case 'cerebras':
                     url = 'https://api.cerebras.ai/v1/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'mistral':
                     url = 'https://api.mistral.ai/v1/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'deepseek':
                     url = 'https://api.deepseek.com/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'openrouter':
@@ -3459,47 +3463,48 @@
                         'X-Title': 'AI Token Tester',
                         'Content-Type': 'application/json' 
                     };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'together':
                     url = 'https://api.together.xyz/v1/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'fireworks':
                     url = 'https://api.fireworks.ai/inference/v1/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'perplexity':
                     url = 'https://api.perplexity.ai/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'siliconflow':
                     url = 'https://api.siliconflow.cn/v1/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'routeway':
                     url = 'https://api.routeway.ai/v1/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'cohere':
                     url = 'https://api.cohere.ai/v1/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 default:
-                    const response = await callNonStreamingWithMemory(apiKey, messagesArray);
+                    // ⭐ PERBAIKAN: Fallback ke callNonStreaming
+                    const response = await callNonStreaming(apiKey, messagesArray[0]?.content || '');
                     onChunk(response);
                     return;
             }
@@ -3510,31 +3515,6 @@
                 headers: headers,
                 body: JSON.stringify(body)
             });
-
-            // Helper untuk format messages sesuai provider
-            function formatMessagesForProvider(messages, provider) {
-                // Default OpenAI format (groq, github, together, dll)
-                if (['openai', 'groq', 'github', 'together', 'fireworks', 'deepseek', 'openrouter', 'siliconflow', 'routeway', 'perplexity', 'cohere'].includes(provider)) {
-                    return messages;
-                }
-                
-                // Anthropic format (sama, cuma system message beda)
-                if (provider === 'anthropic') {
-                    return messages;
-                }
-                
-                // Cerebras format
-                if (provider === 'cerebras') {
-                    return messages;
-                }
-                
-                // Mistral format
-                if (provider === 'mistral') {
-                    return messages;
-                }
-                
-                return messages;
-            }
             
             if (!response.ok) {
                 const errorText = await response.text();
@@ -3545,7 +3525,6 @@
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
-            let firstChunk = true;
             
             while (true) {
                 const { done, value } = await reader.read();
@@ -3559,7 +3538,6 @@
                     const chunk = parseStreamChunk(line);
                     if (chunk) {
                         onChunk(chunk);
-                        firstChunk = false;
                     }
                 }
             }
