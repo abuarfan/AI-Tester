@@ -1499,6 +1499,21 @@
 
                 <div style="margin-top: 10px; border-top: 1px solid #ddd; padding-top: 10px;">
                     <div style="font-size: 0.75em; color: #666; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                        🧠 Memory Mode
+                    </div>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.8em; padding: 8px; background: #e8f5e9; border-radius: 6px; margin-bottom: 6px;">
+                        <input type="checkbox" id="memoryToggle" checked onchange="toggleMemoryMode()">
+                        <span>Aktifkan Memory</span>
+                    </label>
+                    <div style="font-size: 0.7em; color: #888; line-height: 1.3; margin-bottom: 8px;">
+                        AI mengingat percakapan sebelumnya meskipun input box dihapus
+                    </div>
+                    <button class="btn btn-secondary" onclick="clearConversationMemory()" style="width: 100%; font-size: 0.75em; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <span>🧹</span> Clear Memory
+                    </button>
+                </div>
+                <div style="margin-top: 10px; border-top: 1px solid #ddd; padding-top: 10px;">
+                    <div style="font-size: 0.75em; color: #666; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
                         🗑️ Hapus Data
                     </div>
                     <button class="btn btn-secondary" onclick="clearChatOnly()" style="width: 100%; margin-bottom: 6px; font-size: 0.75em; display: flex; align-items: center; justify-content: center; gap: 6px;">
@@ -1926,6 +1941,13 @@
         let currentProvider = 'gemini';
         let currentModel = null;
         let requestHistory = JSON.parse(localStorage.getItem('aiTestHistory') || '[]');
+
+        // Conversation memory - menyimpan seluruh thread percakapan
+        let conversationHistory = [];
+        const MAX_HISTORY_LENGTH = 20; // Simpan 20 pesan terakhir (10 pasang Q&A)
+
+        // Flag untuk mode memory
+        let useMemoryMode = true; // Default aktif
         
         // Statistik per model - struktur: { provider_model: { inputTokens, outputTokens, requestCount, totalCost } }
         let modelStats = JSON.parse(localStorage.getItem('aiModelStats') || '{}');
@@ -2615,6 +2637,7 @@
             populateModels();
             updateModelInfo();
             loadHistory();
+            migrateHistory();
             
             // Load saved API key
             const savedKey = localStorage.getItem(`apiKey_${currentProvider}`);
@@ -3259,6 +3282,22 @@
             let hasReceivedChunk = false;
             
             try {
+                // ⭐ BARU: Build messages array dengan history jika memory mode aktif
+                let messagesArray = [];
+                
+                if (useMemoryMode && conversationHistory.length > 0) {
+                    // Tambahkan history percakapan sebelumnya
+                    messagesArray = [...conversationHistory];
+                }
+                
+                // Tambahkan pesan user saat ini
+                messagesArray.push({
+                    role: 'user',
+                    content: fullMessage
+                });
+                
+                // Log untuk debug
+                console.log('Sending messages:', messagesArray);
                 await streamAIResponse(apiKey, fullMessage, (chunk) => {
                     if (!hasReceivedChunk) {
                         fullResponse = chunk;
@@ -3279,6 +3318,25 @@
                 const endTime = Date.now();
                 const duration = ((endTime - startTime) / 1000).toFixed(2);
                 
+                if (useMemoryMode) {
+                    conversationHistory.push({
+                        role: 'user',
+                        content: fullMessage
+                    });
+                    conversationHistory.push({
+                        role: 'assistant',
+                        content: fullResponse
+                    });
+                    
+                    // Batasi panjang history
+                    if (conversationHistory.length > MAX_HISTORY_LENGTH * 2) {
+                        // Hapus pasangan tertua (2 elemen)
+                        conversationHistory = conversationHistory.slice(2);
+                    }
+                    
+                    console.log('Memory updated:', conversationHistory);
+                }
+
                 // Display response (ini akan aktifkan TTS)
                 displayResponse(fullResponse, duration);
                 
@@ -3299,8 +3357,9 @@
                 saveModelStats();
                 updateStatsDisplay();
                 updateTokenCount();
-                
-                addToHistory(message || `[Dokumen: ${uploadedFiles[0]?.name || 'file'}]`, fullResponse, duration);
+
+                const memoryIndicator = useMemoryMode ? ` [M:${Math.floor(conversationHistory.length/2)}]` : '';
+                addToHistory(message || `[Dokumen: ${uploadedFiles[0]?.name || 'file'}]`, fullResponse, duration, memoryIndicator);
                 
             } catch (error) {
                 responseArea.innerHTML = `<span style="color: #c62828;">Error: ${error.message}</span>`;
@@ -3312,11 +3371,21 @@
 
         // Streaming response handler
         async function streamAIResponse(apiKey, message, onChunk) {
+            // Wrapper untuk backward compatibility
+            const messagesArray = [{
+                role: 'user',
+                content: message
+            }];
+            return streamAIResponseWithMemory(apiKey, messagesArray, onChunk);
+        }
+
+        // Fungsi baru dengan support memory
+        async function streamAIResponseWithMemory(apiKey, messagesArray, onChunk) {
             const provider = currentProvider;
             
-            // Gemini pakai non-streaming (lebih reliable)
+            // Gemini pakai non-streaming
             if (provider === 'gemini') {
-                const response = await callGemini(apiKey, message);
+                const response = await callGeminiWithMemory(apiKey, messagesArray);
                 onChunk(response);
                 return;
             }
@@ -3328,7 +3397,7 @@
             ];
             
             if (nonStreamingProviders.includes(provider)) {
-                const response = await callNonStreaming(apiKey, message);
+                const response = await callNonStreamingWithMemory(apiKey, messagesArray);
                 onChunk(response);
                 return;
             }
@@ -3336,29 +3405,32 @@
             // Build endpoint & headers untuk streaming providers
             let url, headers, body;
             
+            // Format messages untuk berbagai provider
+            const formattedMessages = formatMessagesForProvider(messagesArray, provider);
+            
             switch(provider) {
                 case 'openai':
                     url = 'https://api.openai.com/v1/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'github':
                     url = 'https://models.inference.ai.azure.com/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'anthropic':
                     url = 'https://api.anthropic.com/v1/messages';
                     headers = { 'x-api-key': apiKey, 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' };
-                    body = { model: currentModel.id, max_tokens: 4096, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, max_tokens: 4096, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'groq':
                     url = 'https://api.groq.com/openai/v1/chat/completions';
                     headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-                    body = { model: currentModel.id, messages: [{ role: 'user', content: message }], stream: true };
+                    body = { model: currentModel.id, messages: formattedMessages, stream: true };
                     break;
                     
                 case 'cerebras':
@@ -3427,7 +3499,7 @@
                     break;
                     
                 default:
-                    const response = await callNonStreaming(apiKey, message);
+                    const response = await callNonStreamingWithMemory(apiKey, messagesArray);
                     onChunk(response);
                     return;
             }
@@ -3438,6 +3510,31 @@
                 headers: headers,
                 body: JSON.stringify(body)
             });
+
+            // Helper untuk format messages sesuai provider
+            function formatMessagesForProvider(messages, provider) {
+                // Default OpenAI format (groq, github, together, dll)
+                if (['openai', 'groq', 'github', 'together', 'fireworks', 'deepseek', 'openrouter', 'siliconflow', 'routeway', 'perplexity', 'cohere'].includes(provider)) {
+                    return messages;
+                }
+                
+                // Anthropic format (sama, cuma system message beda)
+                if (provider === 'anthropic') {
+                    return messages;
+                }
+                
+                // Cerebras format
+                if (provider === 'cerebras') {
+                    return messages;
+                }
+                
+                // Mistral format
+                if (provider === 'mistral') {
+                    return messages;
+                }
+                
+                return messages;
+            }
             
             if (!response.ok) {
                 const errorText = await response.text();
@@ -3560,7 +3657,13 @@
             }
         }
 
-        async function callGemini(apiKey, message) {
+        async function callGeminiWithMemory(apiKey, messagesArray) {
+            // Convert OpenAI format ke Gemini format
+            const contents = messagesArray.map(msg => ({
+                role: msg.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: msg.content }]
+            }));
+            
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel.id}:generateContent?key=${apiKey}`;
             
             const response = await fetch(url, {
@@ -3569,11 +3672,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: message
-                        }]
-                    }]
+                    contents: contents
                 })
             });
             
@@ -4214,27 +4313,26 @@
             if (estCost) estCost.textContent = '$' + totalCost.toFixed(6);
         }
 
-        function addToHistory(input, output, duration) {
+        function addToHistory(input, output, duration, memoryIndicator = '') {
             const inputTokens = parseInt(document.getElementById('inputTokens').textContent) || 0;
             const outputTokens = parseInt(document.getElementById('outputTokens').textContent) || 0;
             
             const historyItem = {
-                timestamp: new Date().toLocaleString('id-ID'),
+                timestamp: new Date().toLocaleString('id-ID') + memoryIndicator,
                 provider: currentProvider,
                 model: currentModel.name,
                 modelId: currentModel.id,
                 statsKey: `${currentProvider}_${currentModel.id}`,
-                // ⭐ SIMPAN FULL TEXT untuk restore nanti
                 inputFull: input,
                 outputFull: output,
-                // Preview untuk tampilan di list (bisa diklik untuk expand)
                 input: input.substring(0, 60) + (input.length > 60 ? '...' : ''),
                 output: output.substring(0, 60) + (output.length > 60 ? '...' : ''),
                 duration: duration,
                 inputTokens: inputTokens,
                 outputTokens: outputTokens,
                 tokens: inputTokens + outputTokens,
-                cost: ((inputTokens / 1000000) * currentModel.inputPrice) + ((outputTokens / 1000000) * currentModel.outputPrice)
+                cost: ((inputTokens / 1000000) * currentModel.inputPrice) + ((outputTokens / 1000000) * currentModel.outputPrice),
+                hasMemory: useMemoryMode // Tandai jika ini bagian dari memory thread
             };
             
             requestHistory.unshift(historyItem);
@@ -4361,11 +4459,23 @@
             }
         }
 
-        // Panggil saat init
-        document.addEventListener('DOMContentLoaded', () => {
-            migrateHistory();
-            // ... rest of init code
-        });
+        function toggleMemoryMode() {
+            const toggle = document.getElementById('memoryToggle');
+            useMemoryMode = toggle.checked;
+            
+            if (useMemoryMode) {
+                showSuccess('Memory mode AKTIF - AI akan mengingat percakapan', '🧠 Memory');
+            } else {
+                showInfo('Memory mode NONAKTIF - Setiap pesan independen', '🧠 Memory');
+                // Optional: clear memory when disabled
+                // clearConversationMemory();
+            }
+        }
+
+        function clearConversationMemory() {
+            conversationHistory = [];
+            showSuccess('Memory percakapan dibersihkan', '🧹 Clear');
+        }
 
         // 1. Clear Chat Only - hapus input dan output saja, stats tetap tersimpan
         function clearChatOnly() {
@@ -4385,6 +4495,7 @@
             uploadedAudio = null;
             updateAudioUI();
             
+            // ⭐ PERUBAHAN: Hanya clear input dan output, TAPI JANGAN clear memory
             document.getElementById('chatInput').value = '';
             document.getElementById('responseArea').innerHTML = '<span style="color: #999; font-style: italic;">Jawaban akan muncul di sini...</span>';
             document.getElementById('inputTokenCount').textContent = '0';
@@ -4395,7 +4506,12 @@
             // Clear uploaded files juga
             clearAllUploadedFiles();
             
-            showSuccess('Chat dibersihkan');
+            // ⭐ Info user bahwa memory masih ada
+            if (useMemoryMode && conversationHistory.length > 0) {
+                showInfo(`Input dibersihkan. AI masih ingat ${Math.floor(conversationHistory.length/2)} percakapan sebelumnya.`, '🧠 Memory Active');
+            } else {
+                showSuccess('Chat dibersihkan');
+            }
         }
 
         // 2. Clear History Only - hapus riwayat request
@@ -4484,6 +4600,9 @@
             
             // Execute clear
             clearChatOnly();
+            
+            // ⭐ TAMBAH: Clear conversation memory
+            conversationHistory = [];
             
             requestHistory = [];
             localStorage.removeItem('aiTestHistory');
