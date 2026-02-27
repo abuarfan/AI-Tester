@@ -4224,12 +4224,12 @@
                 model: currentModel.name,
                 modelId: currentModel.id,
                 statsKey: `${currentProvider}_${currentModel.id}`,
-                // ⭐ SIMPAN FULL TEXT, bukan cuma preview
-                fullInput: input,
-                fullOutput: output,
-                // Preview tetap ada untuk tampilan list
-                input: input.substring(0, 50) + (input.length > 50 ? '...' : ''),
-                output: output.substring(0, 50) + (output.length > 50 ? '...' : ''),
+                // ⭐ SIMPAN FULL TEXT untuk restore nanti
+                inputFull: input,
+                outputFull: output,
+                // Preview untuk tampilan di list (bisa diklik untuk expand)
+                input: input.substring(0, 60) + (input.length > 60 ? '...' : ''),
+                output: output.substring(0, 60) + (output.length > 60 ? '...' : ''),
                 duration: duration,
                 inputTokens: inputTokens,
                 outputTokens: outputTokens,
@@ -4252,21 +4252,27 @@
                 return;
             }
             
-            historyList.innerHTML = requestHistory.map((item, index) => `
-                <div class="history-item" onclick="loadHistoryItem(${index})" style="cursor: pointer;">
-                    <div class="history-timestamp" style="display: flex; justify-content: space-between;">
+            historyList.innerHTML = requestHistory.map((item, index) => {
+                // Cek apakah punya full text (data baru) atau tidak (data lama)
+                const hasFullText = item.inputFull && item.outputFull;
+                const indicator = hasFullText ? '💾' : '⚠️';
+                const titleText = hasFullText ? 'Klik untuk restore lengkap' : 'Klik untuk restore (preview only)';
+                
+                return `
+                <div class="history-item" onclick="loadHistoryItem(${index})" title="${titleText}" style="cursor: pointer; ${hasFullText ? 'border-left-color: #4caf50;' : 'border-left-color: #ff9800; opacity: 0.8;'}">
+                    <div class="history-timestamp" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>${item.timestamp}</span>
-                        <span style="color: #667eea;">${item.tokens} tokens</span>
+                        <span style="font-size: 1em;">${indicator}</span>
                     </div>
                     <div style="font-size: 0.75em; color: #666; margin-bottom: 3px;">
-                        ${item.provider} • ${item.model} • ${item.duration}s
+                        ${item.provider} • ${item.model} • ${item.duration}s • ${item.tokens} tokens
                     </div>
                     <div class="history-preview" style="font-size: 0.8em;">
                         <strong>Input:</strong> ${item.input}
                     </div>
                     ${item.cost ? `<div style="font-size: 0.75em; color: #4caf50; margin-top: 3px;">$${item.cost.toFixed(4)}</div>` : ''}
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function loadHistoryItem(index) {
@@ -4296,36 +4302,70 @@
                 }
             }
             
-            // ⭐ BARU: Muat input dan output ke box
+            // ⭐ RESTORE FULL TEXT ke input dan output box
             const chatInput = document.getElementById('chatInput');
             const responseArea = document.getElementById('responseArea');
             const responseTime = document.getElementById('responseTime');
             
             if (chatInput) {
-                // Ambil full input dari history (perlu simpan full text, bukan preview)
-                // Cek apakah ada fullInput tersimpan, kalau tidak pakai preview
-                chatInput.value = item.fullInput || item.input;
+                // Prioritaskan inputFull (data baru), fallback ke input (data lama)
+                const fullInput = item.inputFull || item.input || '';
+                chatInput.value = fullInput;
                 updateTokenCount();
             }
             
             if (responseArea) {
-                responseArea.textContent = item.fullOutput || item.output;
+                // Prioritaskan outputFull (data baru), fallback ke output (data lama)
+                const fullOutput = item.outputFull || item.output || '';
+                responseArea.textContent = fullOutput;
             }
             
             if (responseTime) {
                 responseTime.textContent = `${item.duration}s`;
             }
             
-            // ⭐ BARU: Update token display dari history
-            const inputTokens = item.inputTokens || Math.ceil((item.fullInput || item.input).length / 3.5);
-            const outputTokens = item.outputTokens || Math.ceil((item.fullOutput || item.output).length / 3.5);
+            // Update token display dari history yang tersimpan
+            const inputTok = item.inputTokens || Math.ceil((item.inputFull || item.input || '').length / 3.5);
+            const outputTok = item.outputTokens || Math.ceil((item.outputFull || item.output || '').length / 3.5);
             
-            document.getElementById('inputTokens').textContent = inputTokens.toLocaleString();
-            document.getElementById('outputTokens').textContent = outputTokens.toLocaleString();
-            document.getElementById('totalTokens').textContent = (inputTokens + outputTokens).toLocaleString();
+            document.getElementById('inputTokens').textContent = inputTok.toLocaleString();
+            document.getElementById('outputTokens').textContent = outputTok.toLocaleString();
+            document.getElementById('totalTokens').textContent = (inputTok + outputTok).toLocaleString();
             
-            showSuccess(`Loaded: ${item.provider} - ${item.model} (${item.tokens} tokens)`);
+            // Update cost juga
+            if (item.cost) {
+                document.getElementById('estCost').textContent = '$' + item.cost.toFixed(4);
+            }
+            
+            showSuccess(`Restored: ${item.provider} - ${item.model} (${item.tokens} tokens)`);
         }
+
+        // Migration: Convert old history format to new format (optional)
+        function migrateHistory() {
+            let migrated = false;
+            requestHistory = requestHistory.map(item => {
+                if (!item.inputFull && item.input) {
+                    item.inputFull = item.input;
+                    migrated = true;
+                }
+                if (!item.outputFull && item.output) {
+                    item.outputFull = item.output;
+                    migrated = true;
+                }
+                return item;
+            });
+            
+            if (migrated) {
+                localStorage.setItem('aiTestHistory', JSON.stringify(requestHistory));
+                console.log('History migrated to new format');
+            }
+        }
+
+        // Panggil saat init
+        document.addEventListener('DOMContentLoaded', () => {
+            migrateHistory();
+            // ... rest of init code
+        });
 
         // 1. Clear Chat Only - hapus input dan output saja, stats tetap tersimpan
         function clearChatOnly() {
