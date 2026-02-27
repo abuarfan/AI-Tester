@@ -4223,10 +4223,16 @@
                 provider: currentProvider,
                 model: currentModel.name,
                 modelId: currentModel.id,
-                statsKey: `${currentProvider}_${currentModel.id}`, // Reference ke stats
+                statsKey: `${currentProvider}_${currentModel.id}`,
+                // ⭐ SIMPAN FULL TEXT, bukan cuma preview
+                fullInput: input,
+                fullOutput: output,
+                // Preview tetap ada untuk tampilan list
                 input: input.substring(0, 50) + (input.length > 50 ? '...' : ''),
                 output: output.substring(0, 50) + (output.length > 50 ? '...' : ''),
                 duration: duration,
+                inputTokens: inputTokens,
+                outputTokens: outputTokens,
                 tokens: inputTokens + outputTokens,
                 cost: ((inputTokens / 1000000) * currentModel.inputPrice) + ((outputTokens / 1000000) * currentModel.outputPrice)
             };
@@ -4289,6 +4295,34 @@
                     updateStatsDisplay();
                 }
             }
+            
+            // ⭐ BARU: Muat input dan output ke box
+            const chatInput = document.getElementById('chatInput');
+            const responseArea = document.getElementById('responseArea');
+            const responseTime = document.getElementById('responseTime');
+            
+            if (chatInput) {
+                // Ambil full input dari history (perlu simpan full text, bukan preview)
+                // Cek apakah ada fullInput tersimpan, kalau tidak pakai preview
+                chatInput.value = item.fullInput || item.input;
+                updateTokenCount();
+            }
+            
+            if (responseArea) {
+                responseArea.textContent = item.fullOutput || item.output;
+            }
+            
+            if (responseTime) {
+                responseTime.textContent = `${item.duration}s`;
+            }
+            
+            // ⭐ BARU: Update token display dari history
+            const inputTokens = item.inputTokens || Math.ceil((item.fullInput || item.input).length / 3.5);
+            const outputTokens = item.outputTokens || Math.ceil((item.fullOutput || item.output).length / 3.5);
+            
+            document.getElementById('inputTokens').textContent = inputTokens.toLocaleString();
+            document.getElementById('outputTokens').textContent = outputTokens.toLocaleString();
+            document.getElementById('totalTokens').textContent = (inputTokens + outputTokens).toLocaleString();
             
             showSuccess(`Loaded: ${item.provider} - ${item.model} (${item.tokens} tokens)`);
         }
