@@ -1587,7 +1587,7 @@
                 </div>
 
                 <!-- Voice Status (hidden untuk audio model) -->
-                <div class="voice-status" id="voiceStatus">
+                <div class="voice-status" id="voiceStatusMain">
                     <div class="voice-wave">
                         <span></span><span></span><span></span><span></span><span></span>
                     </div>
@@ -1615,7 +1615,7 @@
                 </div>
 
                 <!-- Voice Status -->
-                <div class="voice-status" id="voiceStatus">
+                <div class="voice-status" id="voiceStatusSecondary" style="display:none;">
                     <div class="voice-wave">
                         <span></span>
                         <span></span>
@@ -3408,6 +3408,14 @@
             
             // Build endpoint & headers untuk streaming providers
             let url, headers, body;
+
+            function formatMessagesForProvider(messages, provider) {
+                // Format standard OpenAI-style (default)
+                return messages.map(msg => ({
+                    role: msg.role,
+                    content: msg.content
+                }));
+            }
             
             // ⭐ PERBAIKAN: formatMessagesForProvider sudah global
             const formattedMessages = formatMessagesForProvider(messagesArray, provider);
