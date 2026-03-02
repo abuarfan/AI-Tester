@@ -1426,6 +1426,229 @@
             transition: width 0.1s linear;
         }
 
+        /* Custom AI Provider Form Styles */
+        .custom-ai-section {
+            margin-top: 15px;
+            border-top: 2px dashed #667eea;
+            padding-top: 15px;
+        }
+
+        .custom-ai-form {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #9c27b0;
+            margin-bottom: 15px;
+        }
+
+        .custom-ai-form h4 {
+            margin: 0 0 12px 0;
+            color: #6a1b9a;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .form-row.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        .custom-ai-form input,
+        .custom-ai-form select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ce93d8;
+            border-radius: 8px;
+            font-size: 0.85em;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .custom-ai-form input:focus,
+        .custom-ai-form select:focus {
+            outline: none;
+            border-color: #9c27b0;
+            box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.1);
+        }
+
+        .custom-ai-form label {
+            display: block;
+            font-size: 0.75em;
+            color: #6a1b9a;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .btn-add-custom {
+            background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-add-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+        }
+
+        .btn-add-custom:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Custom Models List */
+        .custom-models-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .custom-model-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #9c27b0;
+            font-size: 0.8em;
+            position: relative;
+        }
+
+        .custom-model-item h5 {
+            margin: 0 0 5px 0;
+            color: #6a1b9a;
+            font-size: 0.9em;
+        }
+
+        .custom-model-item p {
+            margin: 0;
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        .custom-model-item .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .badge-custom {
+            background: #e1bee7;
+            color: #6a1b9a;
+        }
+
+        .btn-delete-custom {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #f44336;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-delete-custom:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
+        }
+
+        /* Toggle Form Button */
+        .btn-toggle-form {
+            background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
+            color: #6a1b9a;
+            border: 2px solid #9c27b0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-toggle-form:hover {
+            background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+        }
+
+        .btn-toggle-form.active {
+            background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+            color: white;
+        }
+
+        /* Custom Provider in Select */
+        optgroup[label*="CUSTOM"] {
+            background: #f3e5f5;
+            color: #6a1b9a;
+            font-weight: bold;
+        }
+
+        option[value^="custom_"] {
+            background: #fff;
+            color: #6a1b9a;
+        }
+
+        /* Validation Error */
+        .validation-error {
+            color: #f44336;
+            font-size: 0.75em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .validation-error.show {
+            display: block;
+        }
+
+        /* Info Box for Custom AI */
+        .custom-info-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.8em;
+            color: #2e7d32;
+        }
+
+        .custom-info-box strong {
+            color: #1b5e20;
+        }
+
     </style>
     <base target="_blank">
     <!-- PDF Parser -->
@@ -1529,6 +1752,141 @@
                     <button class="btn btn-secondary" onclick="clearConversationMemory()" style="width: 100%; font-size: 0.75em; display: flex; align-items: center; justify-content: center; gap: 6px;">
                         <span>🧹</span> Clear Memory
                     </button>
+
+                    <!-- CUSTOM AI PROVIDER SECTION -->
+                    <div class="custom-ai-section">
+                        <div class="section-title" style="align-items: center; justify-content: center; color: #9c27b0;">
+                            ➕ TAMBAH AI KUSTOM
+                        </div>
+                        
+                        <div class="custom-info-box">
+                            <strong>💡 Tips:</strong> Tambahkan provider AI dan model sendiri. Data tersimpan di browser.
+                        </div>
+                        
+                        <button class="btn-toggle-form" onclick="toggleCustomForm()" id="btnToggleForm">
+                            <span>➕</span> <span id="toggleFormText">Tambah AI Baru</span>
+                        </button>
+                        
+                        <div class="custom-ai-form" id="customAiForm" style="display: none;">
+                            <h4>📝 Detail Provider</h4>
+                            
+                            <div class="form-row full-width">
+                                <label>Nama Provider *</label>
+                                <input type="text" id="customProviderName" placeholder="Contoh: MyAI, LocalLLM, dll">
+                            </div>
+                            
+                            <div class="form-row full-width">
+                                <label>API Endpoint URL *</label>
+                                <input type="text" id="customApiUrl" placeholder="https://api.myai.com/v1/chat/completions">
+                            </div>
+                            
+                            <div class="form-row">
+                                <div>
+                                    <label>Auth Header</label>
+                                    <select id="customAuthType">
+                                        <option value="bearer">Authorization: Bearer</option>
+                                        <option value="apikey">X-API-Key</option>
+                                        <option value="custom">Custom Header</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Request Format</label>
+                                    <select id="customRequestFormat">
+                                        <option value="openai">OpenAI-Compatible</option>
+                                        <option value="anthropic">Anthropic-Compatible</option>
+                                        <option value="gemini">Gemini-Compatible</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row full-width" id="customHeaderRow" style="display: none;">
+                                <label>Custom Header Name</label>
+                                <input type="text" id="customHeaderName" placeholder="X-Custom-Auth">
+                            </div>
+                            
+                            <hr style="border: none; border-top: 1px solid #ce93d8; margin: 15px 0;">
+                            
+                            <h4>🤖 Detail Model</h4>
+                            
+                            <div class="form-row">
+                                <div>
+                                    <label>Model ID *</label>
+                                    <input type="text" id="customModelId" placeholder="gpt-4, llama-3, dll">
+                                </div>
+                                <div>
+                                    <label>Display Name *</label>
+                                    <input type="text" id="customModelName" placeholder="GPT-4 Custom">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div>
+                                    <label>Context Window *</label>
+                                    <input type="number" id="customContext" placeholder="128000" min="0">
+                                </div>
+                                <div>
+                                    <label>Tipe Model</label>
+                                    <select id="customModelType">
+                                        <option value="chat">Chat (Default)</option>
+                                        <option value="audio">Audio/Transcription</option>
+                                        <option value="tts">Text-to-Speech</option>
+                                        <option value="vision">Vision</option>
+                                        <option value="image">Image Generation</option>
+                                        <option value="code">Code</option>
+                                        <option value="reasoning">Reasoning</option>
+                                        <option value="embedding">Embedding</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div>
+                                    <label>Input Price ($/1M)</label>
+                                    <input type="number" id="customInputPrice" placeholder="0.00" step="0.01" min="0">
+                                </div>
+                                <div>
+                                    <label>Output Price ($/1M)</label>
+                                    <input type="number" id="customOutputPrice" placeholder="0.00" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div>
+                                    <label>Rate Limit (RPM)</label>
+                                    <input type="text" id="customRpm" placeholder="30 atau Unlimited">
+                                </div>
+                                <div>
+                                    <label>Badge</label>
+                                    <select id="customBadge">
+                                        <option value="free">🟢 Free</option>
+                                        <option value="paid">💰 Paid</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="validation-error" id="formValidationError">
+                                ⚠️ Harap isi semua field yang wajib (*)
+                            </div>
+                            
+                            <button class="btn-add-custom" onclick="addCustomProviderAndModel()" id="btnAddCustom">
+                                <span>💾</span> Simpan AI & Model
+                            </button>
+                        </div>
+                        
+                        <!-- List Custom Providers -->
+                        <div class="custom-models-list" id="customModelsList">
+                            <!-- Akan diisi oleh JavaScript -->
+                        </div>
+                        
+                        <button class="btn btn-secondary" onclick="exportCustomProviders()" style="width: 100%; margin-top: 10px; font-size: 0.75em;">
+                            <span>📤</span> Export Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="importCustomProviders()" style="width: 100%; margin-top: 6px; font-size: 0.75em;">
+                            <span>📥</span> Import Data
+                        </button>
+                        <input type="file" id="importFileInput" style="display: none;" accept=".json" onchange="handleImportFile(event)">
+                    </div>
                 </div>
             </div>
 
@@ -2787,8 +3145,657 @@
             console.log('Play button found:', !!playBtn);
         });
 
+        // ==================== CUSTOM AI PROVIDER SYSTEM ====================
+
+        // Storage key untuk custom providers
+        const CUSTOM_PROVIDERS_KEY = 'aiTestCustomProviders';
+
+        // Load custom providers dari localStorage
+        function loadCustomProviders() {
+            try {
+                const stored = localStorage.getItem(CUSTOM_PROVIDERS_KEY);
+                if (stored) {
+                    const customProviders = JSON.parse(stored);
+                    // Merge dengan modelConfigs
+                    Object.assign(modelConfigs, customProviders);
+                    return customProviders;
+                }
+            } catch (e) {
+                console.error('Error loading custom providers:', e);
+            }
+            return {};
+        }
+
+        // Simpan custom providers ke localStorage
+        function saveCustomProviders() {
+            const customProviders = {};
+            for (const [key, value] of Object.entries(modelConfigs)) {
+                if (key.startsWith('custom_')) {
+                    customProviders[key] = value;
+                }
+            }
+            localStorage.setItem(CUSTOM_PROVIDERS_KEY, JSON.stringify(customProviders));
+        }
+
+        // Toggle form visibility
+        function toggleCustomForm() {
+            const form = document.getElementById('customAiForm');
+            const btn = document.getElementById('btnToggleForm');
+            const btnText = document.getElementById('toggleFormText');
+            
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                btn.classList.add('active');
+                btnText.textContent = 'Tutup Form';
+            } else {
+                form.style.display = 'none';
+                btn.classList.remove('active');
+                btnText.textContent = 'Tambah AI Baru';
+            }
+        }
+
+        // Handle auth type change
+        document.addEventListener('DOMContentLoaded', () => {
+            const authType = document.getElementById('customAuthType');
+            if (authType) {
+                authType.addEventListener('change', function() {
+                    const customRow = document.getElementById('customHeaderRow');
+                    if (this.value === 'custom') {
+                        customRow.style.display = 'block';
+                    } else {
+                        customRow.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Validasi form
+        function validateCustomForm() {
+            const required = [
+                'customProviderName',
+                'customApiUrl',
+                'customModelId',
+                'customModelName',
+                'customContext'
+            ];
+            
+            for (const id of required) {
+                const el = document.getElementById(id);
+                if (!el || !el.value.trim()) {
+                    return false;
+                }
+            }
+            
+            // Validasi URL
+            const url = document.getElementById('customApiUrl').value.trim();
+            try {
+                new URL(url);
+            } catch (e) {
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Generate provider key yang unik
+        function generateProviderKey(name) {
+            const base = 'custom_' + name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            let key = base;
+            let counter = 1;
+            
+            while (modelConfigs[key]) {
+                key = `${base}_${counter}`;
+                counter++;
+            }
+            
+            return key;
+        }
+
+        // Tambah custom provider dan model
+        function addCustomProviderAndModel() {
+            const validationError = document.getElementById('formValidationError');
+            
+            if (!validateCustomForm()) {
+                validationError.classList.add('show');
+                showError('Harap isi semua field yang wajib dengan benar!');
+                return;
+            }
+            
+            validationError.classList.remove('show');
+            
+            // Ambil nilai dari form
+            const providerName = document.getElementById('customProviderName').value.trim();
+            const apiUrl = document.getElementById('customApiUrl').value.trim();
+            const authType = document.getElementById('customAuthType').value;
+            const requestFormat = document.getElementById('customRequestFormat').value;
+            const customHeaderName = document.getElementById('customHeaderName').value.trim();
+            
+            const modelId = document.getElementById('customModelId').value.trim();
+            const modelName = document.getElementById('customModelName').value.trim();
+            const context = parseInt(document.getElementById('customContext').value) || 0;
+            const modelType = document.getElementById('customModelType').value;
+            const inputPrice = parseFloat(document.getElementById('customInputPrice').value) || 0;
+            const outputPrice = parseFloat(document.getElementById('customOutputPrice').value) || 0;
+            const rpm = document.getElementById('customRpm').value.trim() || '30';
+            const badge = document.getElementById('customBadge').value;
+            
+            // Generate provider key
+            const providerKey = generateProviderKey(providerName);
+            
+            // Buat config object
+            const providerConfig = {
+                name: providerName,
+                apiUrl: apiUrl,
+                authType: authType,
+                requestFormat: requestFormat,
+                customHeaderName: customHeaderName,
+                models: [{
+                    id: modelId,
+                    name: modelName,
+                    context: context,
+                    inputPrice: inputPrice,
+                    outputPrice: outputPrice,
+                    rpm: rpm,
+                    badge: badge,
+                    type: modelType === 'chat' ? undefined : modelType
+                }]
+            };
+            
+            // Tambahkan ke modelConfigs
+            modelConfigs[providerKey] = providerConfig;
+            
+            // Simpan ke localStorage
+            saveCustomProviders();
+            
+            // Update UI
+            updateProviderSelect();
+            renderCustomModelsList();
+            
+            // Reset form
+            resetCustomForm();
+            
+            // Tutup form
+            toggleCustomForm();
+            
+            // Switch ke provider baru
+            switchProvider(providerKey);
+            
+            showSuccess(`Provider "${providerName}" dengan model "${modelName}" berhasil ditambahkan!`, '✅ Berhasil');
+        }
+
+        // Reset form
+        function resetCustomForm() {
+            const fields = [
+                'customProviderName',
+                'customApiUrl',
+                'customHeaderName',
+                'customModelId',
+                'customModelName',
+                'customContext',
+                'customInputPrice',
+                'customOutputPrice',
+                'customRpm'
+            ];
+            
+            for (const id of fields) {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            }
+            
+            // Reset selects ke default
+            document.getElementById('customAuthType').value = 'bearer';
+            document.getElementById('customRequestFormat').value = 'openai';
+            document.getElementById('customModelType').value = 'chat';
+            document.getElementById('customBadge').value = 'free';
+            
+            // Hide custom header row
+            document.getElementById('customHeaderRow').style.display = 'none';
+        }
+
+        // Update provider select dengan custom providers
+        function updateProviderSelect() {
+            const select = document.getElementById('providerSelect');
+            
+            // Hapus optgroup custom yang lama
+            const oldOptgroups = select.querySelectorAll('optgroup[label*="CUSTOM"]');
+            oldOptgroups.forEach(og => og.remove());
+            
+            // Kumpulkan custom providers
+            const customProviders = [];
+            for (const [key, value] of Object.entries(modelConfigs)) {
+                if (key.startsWith('custom_')) {
+                    customProviders.push({ key, ...value });
+                }
+            }
+            
+            if (customProviders.length > 0) {
+                // Buat optgroup baru
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = '🔧 CUSTOM (User Added)';
+                
+                for (const provider of customProviders) {
+                    const option = document.createElement('option');
+                    option.value = provider.key;
+                    option.textContent = `🔧 ${provider.name}`;
+                    option.style.color = '#9c27b0';
+                    optgroup.appendChild(option);
+                }
+                
+                // Insert sebelum optgroup pertama (FREE)
+                const firstOptgroup = select.querySelector('optgroup');
+                if (firstOptgroup) {
+                    select.insertBefore(optgroup, firstOptgroup);
+                } else {
+                    select.appendChild(optgroup);
+                }
+            }
+        }
+
+        // Render list custom models
+        function renderCustomModelsList() {
+            const container = document.getElementById('customModelsList');
+            const customProviders = [];
+            
+            for (const [key, value] of Object.entries(modelConfigs)) {
+                if (key.startsWith('custom_')) {
+                    customProviders.push({ key, ...value });
+                }
+            }
+            
+            if (customProviders.length === 0) {
+                container.innerHTML = '<p style="color: #999; font-size: 0.75em; text-align: center; padding: 10px;">Belum ada AI kustom</p>';
+                return;
+            }
+            
+            container.innerHTML = customProviders.map(provider => {
+                const model = provider.models[0];
+                const typeBadge = model.type ? `<span class="badge badge-custom">${model.type.toUpperCase()}</span>` : '';
+                const priceInfo = model.inputPrice || model.outputPrice ? 
+                    `$${model.inputPrice}/$${model.outputPrice} per 1M` : 'Free';
+                
+                return `
+                    <div class="custom-model-item">
+                        <button class="btn-delete-custom" onclick="deleteCustomProvider('${provider.key}')" title="Hapus">×</button>
+                        <h5>${provider.name}</h5>
+                        <p><strong>Model:</strong> ${model.name} (${model.id})</p>
+                        <p><strong>Context:</strong> ${model.context.toLocaleString()} tokens</p>
+                        <p><strong>Price:</strong> ${priceInfo}</p>
+                        ${typeBadge}
+                        <span class="badge badge-custom">${model.badge === 'free' ? '🟢 Free' : '💰 Paid'}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Hapus custom provider
+        async function deleteCustomProvider(providerKey) {
+            const confirmed = await showModal({
+                title: '🗑️ Hapus AI Kustom',
+                message: `Yakin ingin menghapus provider "${modelConfigs[providerKey]?.name}"?`,
+                type: 'danger',
+                icon: '🗑️',
+                confirmText: 'Ya, Hapus',
+                cancelText: 'Batal'
+            });
+            
+            if (!confirmed) return;
+            
+            // Hapus dari modelConfigs
+            delete modelConfigs[providerKey];
+            
+            // Simpan ke localStorage
+            saveCustomProviders();
+            
+            // Update UI
+            updateProviderSelect();
+            renderCustomModelsList();
+            
+            // Jika sedang aktif, switch ke gemini
+            if (currentProvider === providerKey) {
+                switchProvider('gemini');
+            }
+            
+            showSuccess('AI kustom berhasil dihapus', '🗑️ Terhapus');
+        }
+
+        // Export custom providers ke JSON
+        function exportCustomProviders() {
+            const customProviders = {};
+            for (const [key, value] of Object.entries(modelConfigs)) {
+                if (key.startsWith('custom_')) {
+                    customProviders[key] = value;
+                }
+            }
+            
+            if (Object.keys(customProviders).length === 0) {
+                showWarning('Tidak ada data untuk diexport');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(customProviders, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `ai-test-custom-providers-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showSuccess('Data berhasil diexport!', '📤 Export');
+        }
+
+        // Import custom providers dari JSON
+        function importCustomProviders() {
+            document.getElementById('importFileInput').click();
+        }
+
+        function handleImportFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    
+                    // Validasi struktur
+                    for (const [key, value] of Object.entries(imported)) {
+                        if (!key.startsWith('custom_') || !value.name || !value.models || !Array.isArray(value.models)) {
+                            throw new Error('Format file tidak valid');
+                        }
+                    }
+                    
+                    // Merge dengan existing
+                    Object.assign(modelConfigs, imported);
+                    saveCustomProviders();
+                    
+                    // Update UI
+                    updateProviderSelect();
+                    renderCustomModelsList();
+                    
+                    showSuccess(`${Object.keys(imported).length} provider berhasil diimport!`, '📥 Import');
+                    
+                } catch (err) {
+                    showError('Gagal import: ' + err.message);
+                }
+                
+                // Reset input
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // Tambah model baru ke provider yang sudah ada
+        function addModelToExistingProvider() {
+            // Ini bisa dipanggil dari modal atau form terpisah
+            // Untuk sekarang, user bisa menghapus dan buat ulang dengan model tambahan
+            // Atau bisa dikembangkan lebih lanjut
+            showInfo('Fitur ini akan menambahkan model ke provider yang sudah ada. Untuk sekarang, silakan hapus dan buat ulang dengan multiple models.', 'ℹ️ Info');
+        }
+
+        // Inisialisasi custom providers saat load
+        function initCustomProviders() {
+            loadCustomProviders();
+            updateProviderSelect();
+            renderCustomModelsList();
+        }
+
+        // Override fungsi switchProvider untuk handle custom providers
+        const originalSwitchProvider = switchProvider;
+        switchProvider = function(provider) {
+            // Jika provider adalah custom, update link dan info khusus
+            if (provider.startsWith('custom_')) {
+                const config = modelConfigs[provider];
+                if (!config) {
+                    showError('Provider tidak ditemukan');
+                    return;
+                }
+                
+                currentProvider = provider;
+                
+                // Update dropdown
+                const select = document.getElementById('providerSelect');
+                if (select) select.value = provider;
+                
+                // Update label
+                const label = document.getElementById('providerLabel');
+                if (label) label.textContent = config.name;
+                
+                // Update API Key link
+                const linkElement = document.getElementById('apiKeyLink');
+                if (linkElement) {
+                    linkElement.href = '#';
+                    linkElement.onclick = () => {
+                        showInfo(`Provider kustom: ${config.name}\nEndpoint: ${config.apiUrl}\nFormat: ${config.requestFormat}`, '🔧 Custom Provider');
+                        return false;
+                    };
+                }
+                
+                // Populate models
+                populateModels();
+                updateModelInfo();
+                
+                // Load saved API key
+                const savedKey = localStorage.getItem(`apiKey_${provider}`);
+                const apiKeyInput = document.getElementById('apiKey');
+                if (apiKeyInput) apiKeyInput.value = savedKey || '';
+                
+                return;
+            }
+            
+            // Untuk provider standar, gunakan fungsi asli
+            return originalSwitchProvider(provider);
+        };
+
+        // Override fungsi callNonStreaming untuk handle custom providers
+        const originalCallNonStreaming = callNonStreaming;
+        callNonStreaming = async function(apiKey, message) {
+            if (currentProvider.startsWith('custom_')) {
+                return await callCustomProvider(apiKey, message);
+            }
+            return await originalCallNonStreaming(apiKey, message);
+        };
+
+        // Override fungsi streamAIResponseWithMemory untuk handle custom providers
+        const originalStreamAIResponseWithMemory = streamAIResponseWithMemory;
+        streamAIResponseWithMemory = async function(apiKey, messagesArray, onChunk) {
+            if (currentProvider.startsWith('custom_')) {
+                await streamCustomProvider(apiKey, messagesArray, onChunk);
+                return;
+            }
+            return await originalStreamAIResponseWithMemory(apiKey, messagesArray, onChunk);
+        };
+
+        // Fungsi khusus untuk call custom provider
+        async function callCustomProvider(apiKey, message) {
+            const config = modelConfigs[currentProvider];
+            if (!config) throw new Error('Provider config not found');
+            
+            const model = currentModel;
+            
+            // Build headers berdasarkan auth type
+            let headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (config.authType === 'bearer') {
+                headers['Authorization'] = `Bearer ${apiKey}`;
+            } else if (config.authType === 'apikey') {
+                headers['X-API-Key'] = apiKey;
+            } else if (config.authType === 'custom' && config.customHeaderName) {
+                headers[config.customHeaderName] = apiKey;
+            }
+            
+            // Build body berdasarkan request format
+            let body = {};
+            
+            switch(config.requestFormat) {
+                case 'openai':
+                case 'github':
+                case 'groq':
+                    body = {
+                        model: model.id,
+                        messages: [{ role: 'user', content: message }]
+                    };
+                    break;
+                    
+                case 'anthropic':
+                    body = {
+                        model: model.id,
+                        max_tokens: 4096,
+                        messages: [{ role: 'user', content: message }]
+                    };
+                    break;
+                    
+                case 'gemini':
+                    body = {
+                        contents: [{
+                            role: 'user',
+                            parts: [{ text: message }]
+                        }]
+                    };
+                    break;
+                    
+                default:
+                    body = {
+                        model: model.id,
+                        messages: [{ role: 'user', content: message }]
+                    };
+            }
+            
+            const response = await fetch(config.apiUrl, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(body)
+            });
+            
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(`Custom provider error: ${response.status} - ${error}`);
+            }
+            
+            const data = await response.json();
+            
+            // Parse response berdasarkan format
+            let content = '';
+            
+            switch(config.requestFormat) {
+                case 'openai':
+                case 'github':
+                case 'groq':
+                    content = data.choices?.[0]?.message?.content || '';
+                    if (data.usage) {
+                        document.getElementById('inputTokens').textContent = data.usage.prompt_tokens || 0;
+                        document.getElementById('outputTokens').textContent = data.usage.completion_tokens || 0;
+                    }
+                    break;
+                    
+                case 'anthropic':
+                    content = data.content?.[0]?.text || '';
+                    if (data.usage) {
+                        document.getElementById('inputTokens').textContent = data.usage.input_tokens || 0;
+                        document.getElementById('outputTokens').textContent = data.usage.output_tokens || 0;
+                    }
+                    break;
+                    
+                case 'gemini':
+                    content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                    if (data.usageMetadata) {
+                        document.getElementById('inputTokens').textContent = data.usageMetadata.promptTokenCount || 0;
+                        document.getElementById('outputTokens').textContent = data.usageMetadata.candidatesTokenCount || 0;
+                    }
+                    break;
+                    
+                default:
+                    content = data.choices?.[0]?.message?.content || data.text || data.response || JSON.stringify(data);
+            }
+            
+            return content;
+        }
+
+        // Fungsi streaming untuk custom provider
+        async function streamCustomProvider(apiKey, messagesArray, onChunk) {
+            const config = modelConfigs[currentProvider];
+            if (!config) throw new Error('Provider config not found');
+            
+            const model = currentModel;
+            
+            // Build headers
+            let headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (config.authType === 'bearer') {
+                headers['Authorization'] = `Bearer ${apiKey}`;
+            } else if (config.authType === 'apikey') {
+                headers['X-API-Key'] = apiKey;
+            } else if (config.authType === 'custom' && config.customHeaderName) {
+                headers[config.customHeaderName] = apiKey;
+            }
+            
+            // Build body dengan streaming
+            let body = {
+                model: model.id,
+                stream: true
+            };
+            
+            // Format messages
+            switch(config.requestFormat) {
+                case 'openai':
+                case 'github':
+                case 'groq':
+                    body.messages = messagesArray;
+                    break;
+                    
+                case 'anthropic':
+                    body.max_tokens = 4096;
+                    body.messages = messagesArray;
+                    break;
+                    
+                default:
+                    body.messages = messagesArray;
+            }
+            
+            const response = await fetch(config.apiUrl, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(body)
+            });
+            
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(`Custom provider error: ${response.status} - ${error}`);
+            }
+            
+            // Process stream
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop();
+                
+                for (const line of lines) {
+                    const chunk = parseStreamChunk(line);
+                    if (chunk) onChunk(chunk);
+                }
+            }
+            
+            if (buffer.trim()) {
+                const chunk = parseStreamChunk(buffer);
+                if (chunk) onChunk(chunk);
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            // ⭐ INISIALISASI CUSTOM PROVIDERS (WAJIB DI AWAL)
+            initCustomProviders();
+            
             // Ambil nilai dari dropdown
             const providerSelect = document.getElementById('providerSelect');
             currentProvider = providerSelect ? providerSelect.value : 'gemini';
@@ -2807,6 +3814,9 @@
             if (savedKey && apiKeyInput) {
                 apiKeyInput.value = savedKey;
             }
+            
+            // ⭐ INISIALISASI CUSTOM PROVIDERS UI
+            renderCustomModelsList();
         });
 
         function switchProvider(provider) {
